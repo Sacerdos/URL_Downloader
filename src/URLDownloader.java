@@ -221,12 +221,12 @@ public class URLDownloader {
                     try {
                         urlConRes = new URL(urlRes).openConnection();
                     } catch (MalformedURLException ex) {
-                        JOptionPane.showMessageDialog(null, "MalformedURLException! Let's proceed...");
-                        System.out.println("MalformedURLException! Let's proceed...");
+                        JOptionPane.showMessageDialog(null, "MalformedURLException!");
+                        System.out.println("MalformedURLException!");
                         continue;
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "IOException while reading resource! Let's proceed...");
-                        System.out.println("IOException while reading resource! Let's proceed...");
+                        JOptionPane.showMessageDialog(null, "IOException while reading resource!");
+                        System.out.println("IOException while reading resource!");
                         continue;
                     }
 
@@ -235,10 +235,8 @@ public class URLDownloader {
                     try {
                         buf = readToBytes(urlConRes);
                     } catch (IllegalArgumentException | IllegalStateException e) {
-                        JOptionPane.showMessageDialog(null, "Some exception occurs while writing "
-                                + "to the file, let's proceed...");
-                        System.out.println("Some exception occurs while writing "
-                                + "to the file, let's proceed...");
+                        JOptionPane.showMessageDialog(null, "Some exception occurs while writing to the file");
+                        System.out.println("Some exception occurs while writing to the file.");
                         continue;
                     }
 
@@ -249,16 +247,16 @@ public class URLDownloader {
                     try {
                         writeToFile(buf, fullPathRes);
                     } catch (IllegalStateException | IllegalArgumentException e) {
-                        JOptionPane.showMessageDialog(null, "Error while writing the file, proceed...");
-                        System.out.println("Error while writing the file, proceed...");
+                        JOptionPane.showMessageDialog(null, "Error while writing the file");
+                        System.out.println("Error while writing the file");
                         continue;
                     }
                     str = str.replace(origUrlRes, nameOfFolder + nameOfRes);
                     urlSet.add(origUrlRes);
                 }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Error of some resource, proceed...");
-                System.out.println("Error of some resource, proceed...");
+                JOptionPane.showMessageDialog(null, "Error of some resource");
+                System.out.println("Error of some resource");
             }
         }
         return str.getBytes();
