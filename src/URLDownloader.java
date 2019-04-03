@@ -141,29 +141,12 @@ public class URLDownloader {
                 while (true) {
                     ans = JOptionPane.showConfirmDialog(null, "Warning! File with this name is already exists here. Replace it by new?");
                     System.out.println("Warning! File with this name is already exists here. Replace it by new? (y|n)");
-                    /*try {
-                        ans = reader.readLine();
-                    } catch (IOException ex) {
-                        throw new IllegalStateException();
-                    }
-                    if (ans.startsWith("y")) {
-                        break;
-                    }
-                    if (ans.startsWith("n")) {
-                        System.out.println("Change name for this file:");
-                        try {
-                            String newNameFile = reader.readLine();
-                            newNameFile += nameFile.substring(nameFile.lastIndexOf("."), nameFile.length());
-                            nameFile = newNameFile;
-                        } catch (IOException ex) {
-                            throw new IllegalStateException();
-                        }
-                        return saveFile(path, nameFile);
-                    }*/
                     if(ans==0){
                         break;
                     } else{
-                        String newNameFile = JOptionPane.showInputDialog("New name?");
+                        String newNameFile = JOptionPane.showInputDialog("New name?", nameFile.substring(0, nameFile.lastIndexOf("."))+"2");
+                        System.out.println("SSSSSSSSSS<" + newNameFile + ">");
+
                         newNameFile += nameFile.substring(nameFile.lastIndexOf("."), nameFile.length());
                         nameFile = newNameFile;
                         return saveFileTo(path, nameFile);
