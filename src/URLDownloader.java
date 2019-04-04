@@ -62,9 +62,9 @@ public class URLDownloader {
      * after saving.
      *
      * @param siteAddress user site address
-     * @param pathToSave user path
-     * @param isToOpen   user parameter of opening
-     * See also
+     * @param pathToSave  user path
+     * @param isToOpen    user parameter of opening
+     *                    See also
      * @see #toDownload()
      */
     public URLDownloader(String siteAddress, String pathToSave, boolean isToOpen) {
