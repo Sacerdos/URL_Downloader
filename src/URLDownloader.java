@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 /**
  * @author Sacerdos aka Илья Дычков
  */
@@ -20,42 +21,49 @@ public class URLDownloader {
     private boolean isToOpen = false;
     private String host;
     private final String PATTERN_RESOURCE = "<(img|link).*?(src|href)=\"(.+?)\".*?>";
+
     /**
      * Empty constructor sets default address, path to save file and the false parameter of opening
      * after saving.
      * See also
+     *
      * @see #toDownload()
      */
     public URLDownloader() {
     }
+
     /**
      * The constructor sets user site address, default path to save file and the false parameter of opening
      * after saving.
+     *
      * @param siteAddress user site address
-     * See also
+     *                    See also
      * @see #toDownload()
      */
     public URLDownloader(String siteAddress) {
         this.siteAddress = siteAddress;
     }
+
     /**
      * The constructor sets user site address and path to save file. The false parameter of opening
      * after saving still stays.
+     *
      * @param siteAddress user site address
-     * @param pathToSave
-     * See also
+     * @param pathToSave  See also
      * @see #toDownload()
      */
     public URLDownloader(String siteAddress, String pathToSave) {
         this.siteAddress = siteAddress;
         this.pathToSave = pathToSave;
     }
+
     /**
      * The constructor sets user site address, path to save file and parameter of opening
      * after saving.
+     *
      * @param siteAddress user site address
-     * @param pathToSave
-     * @param isToOpen
+     * @param pathToSave user path
+     * @param isToOpen   user parameter of opening
      * See also
      * @see #toDownload()
      */
@@ -64,6 +72,7 @@ public class URLDownloader {
         this.pathToSave = pathToSave;
         this.isToOpen = isToOpen;
     }
+
     /**
      * Main method of site downloading. The method saves the contents of resource which URL is listed.
      * Saved file may be opened.
@@ -95,6 +104,7 @@ public class URLDownloader {
         }
 
     }
+
     /**
      * The method returns the site address
      *
@@ -107,6 +117,7 @@ public class URLDownloader {
         }
         return siteAddress;
     }
+
     /**
      * The method returns the path where to save file
      *
@@ -119,6 +130,7 @@ public class URLDownloader {
         }
         return pathToSave;
     }
+
     /**
      * The method returns the name of site (default index.html, but varies)
      *
@@ -131,6 +143,7 @@ public class URLDownloader {
         }
         return nameMainPageFile;
     }
+
     /**
      * The method returns the host of site, if it hasn't been set, we define it.
      *
@@ -154,14 +167,16 @@ public class URLDownloader {
         }
         this.nameMainPageFile = nameMainPageFile;
     }
+
     /**
      * The method establish name of file from given url: if the URL contains only main domain, so it's
      * "index.html" as default. In other cases tne name is the last part of the
      * URL, before character '?'
      * If it's necessary, add extension
-     * @throws NullPointerException if given URLConnection == null
+     *
      * @param urlCon the URLConnection object
      * @return name of file from given URL
+     * @throws NullPointerException if given URLConnection == null
      */
     private String defineName(URLConnection urlCon) throws NullPointerException {
         if (urlCon == null) {
@@ -192,12 +207,14 @@ public class URLDownloader {
         }
         return nameFile;
     }
+
     /**
      * The method tries to save file on given path. If path hasn't existed yet, it will be created.
      * If path exists and there is a file with such name, it will ask to replace
      * by new file or not. If choice is not to replace, then it offers to
      * establish new name and this name will be checked.
-     * @param path path to the file
+     *
+     * @param path     path to the file
      * @param nameFile Name of saving file
      * @return approved full path to this file
      * @throws IllegalArgumentException if one of the arguments is incorrect
@@ -220,7 +237,7 @@ public class URLDownloader {
             File file = pathFile.toFile();
             System.out.println("Trying to safe file as " + pathFile.toString());
             if (file.exists()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                //BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 int ans;
                 while (true) {
                     ans = JOptionPane.showConfirmDialog(null, "Warning! File with this name is already exists here. Replace it by new?");
@@ -231,7 +248,7 @@ public class URLDownloader {
                         String newNameFile = JOptionPane.showInputDialog("New name?", nameFile.substring(0, nameFile.lastIndexOf(".")) + "2");
 
 
-                        newNameFile += nameFile.substring(nameFile.lastIndexOf("."), nameFile.length());
+                        newNameFile += nameFile.substring(nameFile.lastIndexOf("."));
                         nameFile = newNameFile;
                         return saveFileTo(path, nameFile);
                     }
@@ -244,6 +261,7 @@ public class URLDownloader {
 
         return path + nameFile;
     }
+
     /**
      * The method reads and saves elements of the HTML document from given URL
      * The HTML document are read to the String, using the necessary
@@ -251,17 +269,17 @@ public class URLDownloader {
      * "{@link #nameMainPageFile}_files" If an exception occurs in the process of
      * reading from the InputStream, the method continue to work with next URLs
      * from the HTML document. The URLs in the document will be replaced
-     * by local paths and the {@link #HashSet} is needed to prevent a loading of
+     * by local paths and the HashSet is needed to prevent a loading of
      * same files. Due to {@link #defineName(URLConnection)} some files may get same
      * names, so you need to decide: replace the old one or
      * give another name for new.
      *
      * @param urlCon the URLConnection object which is associated with some HTML
-     * file.
+     *               file.
      * @return bytes representing of the HTML page
      * @throws IllegalArgumentException if the argument is null or the type
-     * isn't html
-     * @throws IllegalStateException if any error while reading file
+     *                                  isn't html
+     * @throws IllegalStateException    if any error while reading file
      */
     private byte[] parseHTML(URLConnection urlCon) {
         String contentType = urlCon.getContentType();
@@ -271,7 +289,7 @@ public class URLDownloader {
             throw new IllegalArgumentException();
         }
         String charset = contentType.substring(contentType.indexOf("=") + 1);
-        if (charset == null || !contentType.contains("charset")) {
+        if (!contentType.contains("charset")) {
             charset = "utf-8";
         }
         String str = new String();
@@ -280,14 +298,13 @@ public class URLDownloader {
             while ((tmp = br.readLine()) != null) {
                 str += tmp;
             }
-            tmp = null;
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "IOException while reading HTML!");
             System.out.println("IOException while reading HTML!");
             throw new IllegalStateException(ex);
         }
         String nameOfFolder = getNameMainPageFile().substring(0, getNameMainPageFile().lastIndexOf(".")) + "_files/";
-        String pathToFilesFolder = "";
+        String pathToFilesFolder;
         try {
             System.out.println(getPathToSave());
             Path pathFld = Paths.get(getPathToSave(), nameOfFolder);
@@ -316,7 +333,7 @@ public class URLDownloader {
                 if (urlRes.startsWith("//")) {
                     urlRes = ("http:" + urlRes);
                 } else if (urlRes.startsWith("/")) {
-                    urlRes = host + urlRes;
+                    urlRes = getHost() + urlRes;
                 }
                 if (urlRes.contains("tp://") || urlRes.contains("tps://")) {
                     try {
@@ -362,13 +379,14 @@ public class URLDownloader {
         }
         return str.getBytes();
     }
+
     /**
      * The method reads from InputStream of given URL to the byte array
      *
      * @param urlCon representation of URL from which is read the resource
      * @return byte array which contains the resource from URL
      * @throws IllegalArgumentException if the argument is null
-     * @throws IllegalStateException if something get wrong
+     * @throws IllegalStateException    if something get wrong
      */
     private byte[] readToBytes(URLConnection urlCon)
             throws IllegalArgumentException, IllegalStateException {
@@ -407,13 +425,14 @@ public class URLDownloader {
         }
         return buf;
     }
+
     /**
      * The method write the byte array to the file with given path.
      *
-     * @param buf the byte array which contains something what we need to save
+     * @param buf      the byte array which contains something what we need to save
      * @param fullPath the full path, including name of saving file
      * @throws IllegalArgumentException if one of the arguments is null
-     * @throws IllegalStateException if the error occurs in process of writing
+     * @throws IllegalStateException    if the error occurs in process of writing
      */
     private void writeToFile(byte[] buf, String fullPath)
             throws IllegalArgumentException, IllegalStateException {
@@ -429,11 +448,13 @@ public class URLDownloader {
             throw new IllegalStateException();
         }
     }
+
     /**
      * The method opens the file
+     *
      * @param file the file which is needed to open
      * @throws IllegalArgumentException if the argument is null
-     * @throws IllegalStateException if something goes wrong
+     * @throws IllegalStateException    if something goes wrong
      */
     private void showFile(File file) throws IllegalArgumentException, IllegalStateException {
         if (file == null) {
