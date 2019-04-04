@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.io.IOException;
-
+/**
+ * @author Sacerdos aka Илья Дычков
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
         if (args.length==0){

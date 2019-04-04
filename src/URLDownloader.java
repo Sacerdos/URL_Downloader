@@ -10,31 +10,73 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * @author Sacerdos aka Илья Дычков
+ */
 public class URLDownloader {
-    private String siteAdress="https://stackoverflow.com";
-    private String pathToSave=new File("").getAbsolutePath() + "\\output";
+    private String siteAddress = "https://stackoverflow.com";
+    private String pathToSave = new File("").getAbsolutePath() + "\\output";
     private String nameMainPageFile;
-    private boolean isToOpen=false;
+    private boolean isToOpen = false;
     private String host;
     private final String PATTERN_RESOURCE = "<(img|link).*?(src|href)=\"(.+?)\".*?>";
+    /**
+     * Empty constructor sets default address, path to save file and the false parameter of opening
+     * after saving.
+     * See also
+     * @see #toDownload()
+     */
     public URLDownloader() {
     }
-    public URLDownloader(String siteAdress) {
-        this.siteAdress = siteAdress;
+    /**
+     * The constructor sets user site address, default path to save file and the false parameter of opening
+     * after saving.
+     * @param siteAddress user site address
+     * See also
+     * @see #toDownload()
+     */
+    public URLDownloader(String siteAddress) {
+        this.siteAddress = siteAddress;
     }
-    public URLDownloader(String siteAdress, String pathToSave) {
-        this.siteAdress = siteAdress;
+    /**
+     * The constructor sets user site address and path to save file. The false parameter of opening
+     * after saving still stays.
+     * @param siteAddress user site address
+     * @param pathToSave
+     * See also
+     * @see #toDownload()
+     */
+    public URLDownloader(String siteAddress, String pathToSave) {
+        this.siteAddress = siteAddress;
         this.pathToSave = pathToSave;
     }
-
-    public URLDownloader(String siteAdress, String pathToSave, boolean isToOpen) {
-        this.siteAdress = siteAdress;
+    /**
+     * The constructor sets user site address, path to save file and parameter of opening
+     * after saving.
+     * @param siteAddress user site address
+     * @param pathToSave
+     * @param isToOpen
+     * See also
+     * @see #toDownload()
+     */
+    public URLDownloader(String siteAddress, String pathToSave, boolean isToOpen) {
+        this.siteAddress = siteAddress;
         this.pathToSave = pathToSave;
         this.isToOpen = isToOpen;
     }
+    /**
+     * Main method of site downloading. The method saves the contents of resource which URL is listed.
+     * Saved file may be opened.
+     * <p>
+     * {@link #defineName(URLConnection)}
+     * {@link #setNameMainPageFile(String)}
+     * {@link #parseHTML(URLConnection)}
+     * {@link #readToBytes(URLConnection)}
+     * {@link #writeToFile(byte[], String)}
+     * {@link #showFile(File)}
+     */
     public void toDownload() throws IOException {
-        URL url = new URL(getSiteAdress());
+        URL url = new URL(getSiteAddress());
         URLConnection urlConnect = url.openConnection();
         setNameMainPageFile(defineName(urlConnect));
         String finalPath = saveFileTo(getPathToSave(), getNameMainPageFile());
@@ -53,48 +95,81 @@ public class URLDownloader {
         }
 
     }
-
-    private String getSiteAdress() throws NullPointerException {
-        if (siteAdress==null){
-            throw new NullPointerException("at getSiteAdress()");
+    /**
+     * The method returns the site address
+     *
+     * @return siteAddress
+     * @throws NullPointerException if siteAddress hasn't been set yet.
+     */
+    private String getSiteAddress() throws NullPointerException {
+        if (siteAddress == null) {
+            throw new NullPointerException("at getSiteAddress()");
         }
-        return siteAdress;
+        return siteAddress;
     }
+    /**
+     * The method returns the path where to save file
+     *
+     * @return pathToSave
+     * @throws NullPointerException if path hasn't been set yet.
+     */
     private String getPathToSave() throws NullPointerException {
-        if (pathToSave==null){
+        if (pathToSave == null) {
             throw new NullPointerException("at getPathToSave()");
         }
         return pathToSave;
     }
+    /**
+     * The method returns the name of site (default index.html, but varies)
+     *
+     * @return nameMainPageFile
+     * @throws NullPointerException if name hasn't been set yet.
+     */
     private String getNameMainPageFile() throws NullPointerException {
-        if (nameMainPageFile==null){
+        if (nameMainPageFile == null) {
             throw new NullPointerException("at getNameMainPageFile()");
         }
         return nameMainPageFile;
     }
+    /**
+     * The method returns the host of site, if it hasn't been set, we define it.
+     *
+     * @return pathToSave
+     * {@link #getSiteAddress()}
+     */
     private String getHost() {
-        if (host==null){
-            int endOfHostIndex = getSiteAdress().indexOf("/", getSiteAdress().indexOf("://") + 6);
-            if (endOfHostIndex  == -1) {
-                endOfHostIndex = getSiteAdress().length();
+        if (host == null) {
+            int endOfHostIndex = getSiteAddress().indexOf("/", getSiteAddress().indexOf("://") + 6);
+            if (endOfHostIndex == -1) {
+                endOfHostIndex = getSiteAddress().length();
             }
-            host = getSiteAdress().substring(0, endOfHostIndex);
+            host = getSiteAddress().substring(0, endOfHostIndex);
         }
         return host;
     }
+
     private void setNameMainPageFile(String nameMainPageFile) throws NullPointerException {
         if (nameMainPageFile == null) {
             throw new NullPointerException("at setNameMainPageFile(String nameMainPageFile)");
         }
         this.nameMainPageFile = nameMainPageFile;
     }
+    /**
+     * The method establish name of file from given url: if the URL contains only main domain, so it's
+     * "index.html" as default. In other cases tne name is the last part of the
+     * URL, before character '?'
+     * If it's necessary, add extension
+     * @throws NullPointerException if given URLConnection == null
+     * @param urlCon the URLConnection object
+     * @return name of file from given URL
+     */
     private String defineName(URLConnection urlCon) throws NullPointerException {
         if (urlCon == null) {
             throw new NullPointerException("at defineName(URLConnection urlCon)");
         }
         String nameFile = "index.html";
         String urlStr = urlCon.toString();
-        urlStr=urlStr.split("\\?")[0];
+        urlStr = urlStr.split("\\?")[0];
         int lastSlashIndex = urlStr.lastIndexOf("/", urlStr.length() - 2);
         if (lastSlashIndex > urlStr.indexOf("://") + 2) {
             int end = urlStr.length();
@@ -103,7 +178,7 @@ public class URLDownloader {
                 nameFile = nameFile.replaceAll("/", "");
             }
             String extens = urlCon.getContentType();
-            System.out.println(nameFile + " " +urlCon.getContentType() + " " + extens);
+            System.out.println(nameFile + " " + urlCon.getContentType() + " " + extens);
             if (extens != null) {
                 int beginExt = (extens.contains("+") ? extens.indexOf("+") + 1 : extens.indexOf("/") + 1);
                 int endExt = (extens.contains(";") ? extens.indexOf(";") : extens.length());
@@ -117,7 +192,16 @@ public class URLDownloader {
         }
         return nameFile;
     }
-
+    /**
+     * The method tries to save file on given path. If path hasn't existed yet, it will be created.
+     * If path exists and there is a file with such name, it will ask to replace
+     * by new file or not. If choice is not to replace, then it offers to
+     * establish new name and this name will be checked.
+     * @param path path to the file
+     * @param nameFile Name of saving file
+     * @return approved full path to this file
+     * @throws IllegalArgumentException if one of the arguments is incorrect
+     */
     private String saveFileTo(String path, String nameFile) {
         Path pathToFolder = Paths.get(path);
         File fileFolder = pathToFolder.toFile();
@@ -141,11 +225,11 @@ public class URLDownloader {
                 while (true) {
                     ans = JOptionPane.showConfirmDialog(null, "Warning! File with this name is already exists here. Replace it by new?");
                     System.out.println("Warning! File with this name is already exists here. Replace it by new? (y|n)");
-                    if(ans==0){
+                    if (ans == 0) {
                         break;
-                    } else{
-                        String newNameFile = JOptionPane.showInputDialog("New name?", nameFile.substring(0, nameFile.lastIndexOf("."))+"2");
-                        System.out.println("SSSSSSSSSS<" + newNameFile + ">");
+                    } else {
+                        String newNameFile = JOptionPane.showInputDialog("New name?", nameFile.substring(0, nameFile.lastIndexOf(".")) + "2");
+
 
                         newNameFile += nameFile.substring(nameFile.lastIndexOf("."), nameFile.length());
                         nameFile = newNameFile;
@@ -160,7 +244,25 @@ public class URLDownloader {
 
         return path + nameFile;
     }
-
+    /**
+     * The method reads and saves elements of the HTML document from given URL
+     * The HTML document are read to the String, using the necessary
+     * charset(default - "utf-8"). All files are saved to the folder with name
+     * "{@link #nameMainPageFile}_files" If an exception occurs in the process of
+     * reading from the InputStream, the method continue to work with next URLs
+     * from the HTML document. The URLs in the document will be replaced
+     * by local paths and the {@link #HashSet} is needed to prevent a loading of
+     * same files. Due to {@link #defineName(URLConnection)} some files may get same
+     * names, so you need to decide: replace the old one or
+     * give another name for new.
+     *
+     * @param urlCon the URLConnection object which is associated with some HTML
+     * file.
+     * @return bytes representing of the HTML page
+     * @throws IllegalArgumentException if the argument is null or the type
+     * isn't html
+     * @throws IllegalStateException if any error while reading file
+     */
     private byte[] parseHTML(URLConnection urlCon) {
         String contentType = urlCon.getContentType();
         if (!contentType.contains("html")) {
@@ -213,8 +315,7 @@ public class URLDownloader {
                 String origUrlRes = urlRes;
                 if (urlRes.startsWith("//")) {
                     urlRes = ("http:" + urlRes);
-                }
-                else if (urlRes.startsWith("/")) {
+                } else if (urlRes.startsWith("/")) {
                     urlRes = host + urlRes;
                 }
                 if (urlRes.contains("tp://") || urlRes.contains("tps://")) {
@@ -261,7 +362,14 @@ public class URLDownloader {
         }
         return str.getBytes();
     }
-
+    /**
+     * The method reads from InputStream of given URL to the byte array
+     *
+     * @param urlCon representation of URL from which is read the resource
+     * @return byte array which contains the resource from URL
+     * @throws IllegalArgumentException if the argument is null
+     * @throws IllegalStateException if something get wrong
+     */
     private byte[] readToBytes(URLConnection urlCon)
             throws IllegalArgumentException, IllegalStateException {
         if (urlCon == null) {
@@ -299,7 +407,14 @@ public class URLDownloader {
         }
         return buf;
     }
-
+    /**
+     * The method write the byte array to the file with given path.
+     *
+     * @param buf the byte array which contains something what we need to save
+     * @param fullPath the full path, including name of saving file
+     * @throws IllegalArgumentException if one of the arguments is null
+     * @throws IllegalStateException if the error occurs in process of writing
+     */
     private void writeToFile(byte[] buf, String fullPath)
             throws IllegalArgumentException, IllegalStateException {
         if (buf == null || fullPath == null) {
@@ -314,7 +429,12 @@ public class URLDownloader {
             throw new IllegalStateException();
         }
     }
-
+    /**
+     * The method opens the file
+     * @param file the file which is needed to open
+     * @throws IllegalArgumentException if the argument is null
+     * @throws IllegalStateException if something goes wrong
+     */
     private void showFile(File file) throws IllegalArgumentException, IllegalStateException {
         if (file == null) {
             JOptionPane.showMessageDialog(null, "showFile: Argument is null!");
@@ -330,17 +450,5 @@ public class URLDownloader {
                 throw new IllegalStateException();
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "URLDownloader{" +
-                "siteAdress='" + getSiteAdress() + '\'' +
-                ", pathToSave='" + getPathToSave() + '\'' +
-                ", nameMainPageFile='" + getNameMainPageFile() + '\'' +
-                ", isToOpen=" + isToOpen +
-                ", host='" + getHost() + '\'' +
-                ", PATTERN_RESOURCE='" + PATTERN_RESOURCE + '\'' +
-                '}';
     }
 }
